@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-base: #121212;
+            --neon-pink: #ff6b6b;
+            --neon-blue: #00f7ff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-base);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .brand-name {
+            font-family: 'Pacifico', cursive;
+            color: var(--neon-pink);
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px var(--neon-pink);
+            animation: flicker 3s infinite alternate;
+        }
+        .brand-name:hover {
+            transform: scale(1.05);
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+        .hero-brand {
+            font-family: 'Pacifico', cursive;
+            font-size: 5rem;
+            color: #ff6b6b;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            margin-bottom: 1rem;
+        }
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 5rem 0;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--neon-pink);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        .feature-card {
+            transition: transform 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .about-section {
+            background-color: #f8f9fa;
+            border-radius: 0;
+            padding: 0;
+        }
+        .contact-info {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            margin-bottom: 0;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,107,107,0.1) 0%, rgba(0,247,255,0.1) 100%);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            cursor: pointer;
+        }
+        .scroll-down i {
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-30px);
+            }
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+        .navbar {
+            background: rgba(0, 0, 0, 1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            padding: 1rem 0;
+        }
+        .navbar-light .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            transition: all 0.3s ease;
+        }
+        .navbar-light .navbar-nav .nav-link:hover {
+            color: var(--neon-pink) !important;
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+        .navbar.scrolled {
+            background: transparent !important;
+            box-shadow: none;
+            backdrop-filter: none;
+            border-bottom: none;
+        }
+        .navbar.scrolled .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        .navbar.scrolled .navbar-nav .nav-link:hover {
+            color: var(--neon-pink) !important;
+        }
+        .navbar.scrolled .brand-name {
+            color: var(--neon-pink);
+            text-shadow: none;
+        }
+        .navbar-light .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .navbar-light .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        .navbar.scrolled .navbar-toggler {
+            border-color: rgba(0, 0, 0, 0.5);
+        }
+        .navbar.scrolled .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        #features .container {
+            max-width: 1400px;
+        }
+        h2 {
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: #ff6b6b;
+            border-radius: 2px;
+        }
+        .mood-icon {
+            font-size: 1.8rem;
+            margin: 0 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .mood-icon:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 20px var(--neon-pink);
+        }
+        .btn-glow {
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            border-radius: 30px;
+            padding: 1rem 2.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--neon-pink);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        .btn-glow:hover::before {
+            width: 100%;
+        }
+        .btn-glow:hover {
+            color: var(--dark-base);
+            box-shadow: 0 0 30px var(--neon-pink);
+            transform: translateY(-2px);
+        }
+        .btn-surprise {
+            background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+            border: none;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .btn-surprise:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--neon-blue);
+            color: white;
+        }
+        .btn-surprise:active {
+            transform: translateY(0);
+        }
+        .surprise-text {
+            font-weight: 600;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .btn-surprise:hover i {
+            animation: spin 1s ease infinite;
+        }
+        @keyframes flicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+                opacity: 1;
+            }
+            20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+                opacity: 0.4;
+            }
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .section-title {
+            color: white;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 3rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+        #features {
+            background: linear-gradient(to bottom, var(--dark-base), #1a1a1a);
+        }
+        #about {
+            background: linear-gradient(to bottom, #1a1a1a, var(--dark-base));
+        }
+    </style>
+    <title>Foodie</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand brand-name" href="#">Foodie</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto">
+                    <a class="nav-link active" href="#hero">Home</a>
+                    <a class="nav-link" href="#features">Features</a>
+                    <a class="nav-link" href="#about">About Us</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="container text-center" data-aos="fade-up">
+            <h1 class="hero-brand">Foodie</h1>
+            <p class="lead" id="typewriter"></p>
+            <script>
+                const text = "Hungry? Bored? Sad? In Love? We got food for that.";
+                let i = 0;
+                function typeWriter() {
+                    if (i < text.length) {
+                        document.getElementById("typewriter").innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 50);
+                    }
+                }
+                window.onload = typeWriter;
+            </script>
+            <a href="/login" class="btn btn-glow">Get Started</a>
+        </div>
+        <div class="scroll-down" onclick="document.getElementById('features').scrollIntoView({ behavior: 'smooth' })">
+            <p>Scroll Down</p>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="section-title text-center">Our Features</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="glass-card feature-card h-100" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-search-location feature-icon"></i>
+                            <h5 class="card-title">Smart Search</h5>
+                            <p class="card-text">Find your perfect dining spot by location, cuisine, and budget. Tailored recommendations just for you.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="glass-card feature-card h-100" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-body text-center">
+                            <i class="fas fa-star feature-icon"></i>
+                            <h5 class="card-title">Top Rated</h5>
+                            <p class="card-text">Discover top-rated restaurants with authentic reviews and ratings from food lovers like you.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="glass-card feature-card h-100" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card-body text-center">
+                            <i class="fas fa-comments feature-icon"></i>
+                            <h5 class="card-title">Community Reviews</h5>
+                            <p class="card-text">Read and write detailed reviews. Share your dining experiences with the community.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="glass-card feature-card h-100" data-aos="fade-up" data-aos-delay="400">
+                        <div class="card-body text-center">
+                            <i class="fas fa-smile-beam feature-icon"></i>
+                            <h5 class="card-title">Mood-Based Suggestions</h5>
+                            <p class="card-text">Feeling sad? Here's some comfort food.</p>
+                            <div class="mood-icons mt-3">
+                                <span class="mood-icon" title="Sad - Need comfort food">😢</span>
+                                <span class="mood-icon" title="Happy - Celebration food">😍</span>
+                                <span class="mood-icon" title="Tired - Quick & easy">😴</span>
+                                <span class="mood-icon" title="Adventure - Try something new">😎</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="glass-card feature-card h-100" data-aos="fade-up" data-aos-delay="500">
+                        <div class="card-body text-center">
+                            <i class="fas fa-random feature-icon"></i>
+                            <h5 class="card-title">"Surprise Me" Button</h5>
+                            <p class="card-text">Feeling adventurous? Let us pick a random amazing restaurant for you!</p>
+                            <button class="btn btn-surprise mt-3">
+                                <span class="surprise-text">Surprise Me!</span>
+                                <i class="fas fa-magic ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title text-center">About Us</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6" data-aos="fade-right">
+                    <div class="glass-card">
+                        <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600" class="img-fluid rounded" alt="Team Photo">
+                    </div>
+                </div>
+                <div class="col-md-6" data-aos="fade-left">
+                    <div class="glass-card">
+                        <h3 class="mb-4">Get in Touch</h3>
+                        <p class="lead mb-4">We're here to help you discover amazing dining experiences. Have questions? Reach out to us!</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-envelope mr-3 feature-icon"></i>
+                            <div>
+                                <h5 class="mb-0">Email</h5>
+                                <p class="mb-0">karthikeya18062005@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-3 feature-icon"></i>
+                            <div>
+                                <h5 class="mb-0">Phone</h5>
+                                <p class="mb-0">+91 9110786883</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: false,
+            mirror: true
+        });
+
+        // Change navbar background on scroll
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                document.querySelector('.navbar').classList.add('scrolled');
+            } else {
+                document.querySelector('.navbar').classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>

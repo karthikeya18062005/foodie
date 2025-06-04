@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ restaurant.name }} - Urban Food Explorer</title>
+    <!-- Core CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --neon-purple: #b026ff;
+            --neon-pink: #ff2674;
+            --neon-cyan: #26ffff;
+            --glass-bg: rgba(18, 18, 18, 0.8);
+            --card-bg: rgba(28, 28, 28, 0.9);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .glass-morphic {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+
+        .menu-category {
+            margin-bottom: 2rem;
+        }
+
+        .menu-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(176, 38, 255, 0.2);
+        }
+
+        .menu-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .restaurant-header {
+            position: relative;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 2rem;
+        }
+
+        .restaurant-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+        }
+
+        .restaurant-info {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 2;
+        }
+
+        /* Cart Styles */
+        .cart-section {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            padding: 20px;
+            color: white;
+        }
+
+        .cart-section.active {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .cart-total {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .proceed-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .cart-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--neon-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .add-to-cart-btn {
+            background: var(--neon-purple);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background: var(--neon-pink);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <a href="{{ url_for('home') }}" class="btn btn-outline-light back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+
+        <!-- Cart Toggle Button -->
+        <button class="cart-toggle" onclick="toggleCart()">
+            <i class="fas fa-shopping-cart"></i> Cart <span id="cartCount">0</span>
+        </button>
+
+        <!-- Cart Section -->
+        <div class="cart-section" id="cartSection">
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+                <button class="cart-close" onclick="toggleCart()">×</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items will be dynamically added here -->
+            </div>
+            <div class="cart-total">
+                <h4>Total: ₹<span id="cartTotal">0</span></h4>
+                <button class="proceed-btn" onclick="proceedToPayment()">Proceed to Payment</button>
+            </div>
+        </div>
+
+        <div class="restaurant-header glass-morphic mt-5" style="background-image: url('{{ restaurant.image_url }}')">
+            <div class="restaurant-info">
+                <h1>{{ restaurant.name }}</h1>
+                <div class="d-flex gap-2 mb-3">
+                    {% if restaurant.cuisine %}
+                        {% for cuisine in restaurant.cuisine %}
+                            <span class="badge bg-info">{{ cuisine }}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <span class="badge bg-success">{{ restaurant.price_level }}</span>
+                    <span class="badge bg-warning">⭐ {{ restaurant.rating }}</span>
+                </div>
+                {% if restaurant.description %}
+                    <p>{{ restaurant.description }}</p>
+                {% endif %}
+                {% if restaurant.address %}
+                    <p><i class="fas fa-map-marker-alt"></i> {{ restaurant.address }}{% if restaurant.city %}, {{ restaurant.city }}{% endif %}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Menu Section -->
+                <div class="glass-morphic p-4">
+                    <h2 class="mb-4">Menu</h2>
+                    {% if restaurant.menu %}
+                        <div class="row">
+                            {% for item in restaurant.menu %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="menu-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                {% if item.image_url %}
+                                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                {% else %}
+                                                    <div style="width: 100px; height: 100px; background-color: #2a2a2a; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-utensils fa-2x text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col">
+                                                <h5>{{ item.name }}</h5>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="text-success fw-bold">₹{{ item.price }}</span>
+                                                    <button class="add-to-cart-btn" 
+                                                            data-name="{{ item.name }}"
+                                                            data-price="{{ item.price }}"
+                                                            data-image="{{ item.image_url }}"
+                                                            onclick="addToCartFromButton(this)">
+                                                        Add to Cart
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Menu items coming soon...</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Additional Info Section -->
+                <div class="glass-morphic p-4 mb-4">
+                    <h3>Hours</h3>
+                    <ul class="list-unstyled">
+                        {% for day, hours in restaurant.hours.items() %}
+                            <li class="mb-2">
+                                <strong>{{ day }}:</strong> {{ hours }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="glass-morphic p-4">
+                    <h3>Contact</h3>
+                    {% if restaurant.phone != 'N/A' %}
+                        <p><i class="fas fa-phone"></i> {{ restaurant.phone }}</p>
+                    {% endif %}
+                    {% if restaurant.email != 'N/A' %}
+                        <p><i class="fas fa-envelope"></i> {{ restaurant.email }}</p>
+                    {% endif %}
+                    {% if restaurant.location_url != '#' %}
+                        <a href="{{ restaurant.location_url }}" class="btn btn-outline-light w-100 mb-2" target="_blank">
+                            <i class="fas fa-map-marker-alt"></i> View on Map
+                        </a>
+                    {% endif %}
+                    {% if restaurant.website %}
+                        <a href="{{ restaurant.website }}" class="btn btn-outline-light w-100" target="_blank">
+                            <i class="fas fa-globe"></i> Visit Website
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cart functionality
+        let cart = [];
+        let cartVisible = false;
+
+        function toggleCart() {
+            const cartSection = document.getElementById('cartSection');
+            cartVisible = !cartVisible;
+            cartSection.classList.toggle('active', cartVisible);
+        }
+
+        function addToCart(name, price, imageUrl) {
+            const existingItem = cart.find(item => item.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    name: name,
+                    price: price,
+                    imageUrl: imageUrl,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+            
+            // Show cart if it's not visible
+            if (!cartVisible) {
+                toggleCart();
+            }
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            // Update cart count
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // Update cart items
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <img src="${item.imageUrl || '#'}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                    <div class="cart-item-details">
+                        <h6>${item.name}</h6>
+                        <p>₹${item.price}</p>
+                    </div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn" onclick="updateQuantity('${item.name}', -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity('${item.name}', 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update total
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = total.toFixed(2);
+        }
+
+        function updateQuantity(name, change) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.name !== name);
+                }
+                updateCart();
+            }
+        }
+
+        function proceedToPayment() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            // Store cart data in session storage
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            sessionStorage.setItem('restaurantName', '{{ restaurant.name }}');
+            
+            // Redirect to payment page
+            window.location.href = '/payment';
+        }
+
+        function addToCartFromButton(button) {
+            const name = button.getAttribute('data-name');
+            const price = parseFloat(button.getAttribute('data-price'));
+            const imageUrl = button.getAttribute('data-image');
+            addToCart(name, price, imageUrl);
+        }
+    </script>
+</body>
+</html> 

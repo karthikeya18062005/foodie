@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Urban Food Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Your existing payment.html styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .form-container {
+            background-color: rgba(28, 28, 28, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 550px;
+            max-width: 95%;
+            box-sizing: border-box;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ddd;
+            font-weight: 600;
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="tel"],
+        .form-container input[type="file"],
+        .form-container textarea {
+            width: 100%;
+            padding: 12px 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+        }
+
+        .form-container input[type="file"] {
+            padding: 10px;
+        }
+
+        .form-container textarea {
+            resize: vertical;
+        }
+
+        .form-container button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #b026ff, #ff2674);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .form-container button[type="submit"]:hover {
+            transform: translateY(-2px);
+        }
+
+        .order-summary {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .qr-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .qr-section h3 {
+            color: #b026ff;
+            margin-bottom: 15px;
+        }
+
+        #qrCode {
+            margin: 15px auto;
+            width: 180px;
+            height: 180px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .response-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .response-message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+        }
+
+        .response-message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container" id="paymentFormContainer">
+        <form id="paymentForm" enctype="multipart/form-data">
+            <h2>💳 Payment Details</h2>
+
+            <div class="order-summary" id="orderSummary">
+                <h3>Order Summary</h3>
+                <div id="orderItems">
+                    <!-- Order items will be populated here -->
+                </div>
+                <div class="order-item" style="border-top: 2px solid rgba(255, 255, 255, 0.3); margin-top: 10px; padding-top: 10px;">
+                    <strong>Total Amount:</strong>
+                    <span id="totalAmount">₹0.00</span>
+                </div>
+            </div>
+
+            <label for="name">👤 Full Name</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="phone">📞 Phone Number</label>
+            <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number" required />
+
+            <label for="address">🏠 Delivery Address</label>
+            <textarea id="address" name="address" rows="3" required></textarea>
+
+            <div class="qr-section">
+                <h3>Scan to Pay</h3>
+                <canvas id="qrCode"></canvas>
+                <p>UPI ID: <span id="upiIdDisplay">9110786883@ybl</span></p>
+                <input type="hidden" id="upiId" name="upiId" value="9110786883@ybl">
+            </div>
+
+            <label>📷 Upload Payment Proof</label>
+            <input type="file" id="paymentProof" name="paymentProof" accept=".jpg,.jpeg,.png,.pdf" required />
+            <div id="filePreview"></div>
+
+            <input type="hidden" id="items" name="items">
+            <input type="hidden" id="total_amount" name="total_amount">
+
+            <button type="submit">✅ Complete Order</button>
+            <div id="responseMessage" class="response-message"></div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get cart data from session storage
+            const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+            const restaurantName = sessionStorage.getItem('restaurantName');
+            
+            if (!cart.length) {
+                window.location.href = '/home';
+                return;
+            }
+
+            // Populate order summary
+            const orderItems = document.getElementById('orderItems');
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'order-item';
+                itemDiv.innerHTML = `
+                    <div>
+                        ${item.name} x ${item.quantity}
+                    </div>
+                    <div>₹${itemTotal.toFixed(2)}</div>
+                `;
+                orderItems.appendChild(itemDiv);
+            });
+
+            // Update total amount
+            document.getElementById('totalAmount').textContent = `₹${total.toFixed(2)}`;
+            document.getElementById('total_amount').value = total;
+            document.getElementById('items').value = JSON.stringify(cart);
+
+            // Generate QR code
+            const qrCode = document.getElementById('qrCode');
+            const upiId = document.getElementById('upiId').value;
+            const qrText = `upi://pay?pa=${upiId}&pn=Urban%20Food%20Explorer&am=${total}&tn=Food%20Order%20Payment`;
+            QRCode.toCanvas(qrCode, qrText, { width: 180 });
+
+            // Handle form submission
+            const form = document.getElementById('paymentForm');
+            const responseMessage = document.getElementById('responseMessage');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                
+                try {
+                    const response = await fetch('/api/process-payment', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        responseMessage.textContent = result.message;
+                        responseMessage.className = 'response-message success';
+                        responseMessage.style.display = 'block';
+                        
+                        // Clear cart
+                        sessionStorage.removeItem('cart');
+                        sessionStorage.removeItem('restaurantName');
+                        
+                        // Redirect after a short delay
+                        setTimeout(() => {
+                            window.location.href = result.redirect;
+                        }, 2000);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    responseMessage.textContent = error.message || 'Payment failed. Please try again.';
+                    responseMessage.className = 'response-message error';
+                    responseMessage.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
